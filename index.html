@@ -4,11 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
   <style>
     body {
       background-color: #1e1e1e;
       color: #ffffff;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'JetBrains Mono', monospace;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -17,82 +18,150 @@
       margin: 0;
       padding: 20px 10px 0;
       box-sizing: border-box;
+      position: relative;
     }
     .clock {
       font-size: 64px;
       margin-bottom: 10px;
     }
     .weather {
-      font-size: 22px;
       text-align: left;
       margin-bottom: 20px;
-      line-height: 1.5;
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 10px;
     }
     .weather .city {
       font-size: 20px;
       color: #aaa;
       text-align: center;
     }
-    .weather-row {
+    .weather-row, .forecast {
       display: flex;
       align-items: center;
       gap: 10px;
+      padding: 10px 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      transition: background-color 0.3s;
     }
     .weather .icon {
       width: 40px;
       height: 40px;
     }
     .weather .current {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: bold;
     }
     .weather .forecast {
       font-size: 20px;
       color: #ccc;
-      display: flex;
-      align-items: center;
-      gap: 10px;
     }
-    .forecast .icon {
-      width: 30px;
-      height: 30px;
+    .iframe-wrapper {
+      width: 100%;
+      flex-grow: 1;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
     iframe {
       border: none;
       width: 100%;
-      flex-grow: 1;
+      height: 100%;
+    }
+    .footer {
+      font-size: 14px;
+      color: #888;
+      margin-top: 10px;
+    }
+    .update-indicator {
+      width: 8px;
+      height: 8px;
+      background-color: #4caf50;
+      border-radius: 50%;
+      animation: blink 1s ease-in-out infinite alternate;
+      display: inline-block;
+      margin-left: 8px;
+    }
+    #easter-egg, #eye {
+      position: absolute;
+      top: 10%;
+      right: 10%;
+      font-size: 28px;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    #eye {
+      font-size: 48px;
+    }
+    @keyframes blink {
+      from { opacity: 1; }
+      to { opacity: 0.2; }
     }
   </style>
 </head>
 <body>
   <div class="clock" id="clock">--:--:--</div>
   <div class="weather">
-    <div class="city">Москва</div>
-    <div class="weather-row">
+    <div class="city" id="day-name">Москва</div>
+    <div class="weather-row" id="weather-row">
       <img id="weather-icon-current" class="icon" src="" alt="">
       <div class="current" id="weather-current">Загрузка...</div>
+      <span class="update-indicator"></span>
     </div>
-    <div class="forecast">
+    <div class="forecast" id="forecast-row">
       <img id="weather-icon-forecast" class="icon" src="" alt="">
       <div id="weather-forecast"></div>
     </div>
   </div>
-  <iframe
-    src="https://calendar.google.com/calendar/embed?src=b21nZ21sb2xAZ21haWwuY29t&src=YjlmNWI0YzE0ZmFiYmYxZWNmYjI5NmNjMjQ0MzA0OTY4MGNmMGFjNDUxYmRkN2JkYzZjZDdhYjUyZDFhMGY4NEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=family17256235087314708973@group.calendar.google.com&ctz=Europe%2FMoscow"
-    frameborder="0">
-  </iframe>
+  <div class="iframe-wrapper">
+    <iframe
+      src="https://calendar.google.com/calendar/embed?src=b21nZ21sb2xAZ21haWwuY29t&src=YjlmNWI0YzE0ZmFiYmYxZWNmYjI5NmNjMjQ0MzA0OTY4MGNmMGFjNDUxYmRkN2JkYzZjZDdhYjUyZDFhMGY4NEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=family17256235087314708973@group.calendar.google.com&src=pol5bl9ci5njn7kgja3itfislgcq1rt4@import.calendar.google.com&ctz=Europe%2FMoscow"
+      frameborder="0">
+    </iframe>
+  </div>
+  <div class="footer">Hard work, pays off</div>
+  <div id="easter-egg">🐉 Keep going!</div>
+  <div id="eye">👁</div>
 
   <script>
+    const easterPhrases = [
+      '🐉 Keep going!',
+      '💡 Stay sharp.',
+      '⏳ Time is your ally.',
+      '📡 Connected to the cosmos.',
+      '🛸 Unexpected visitor detected.',
+      '🔮 Trust the process.',
+      '☕ Take a breath.',
+      '🧠 Thinking...',
+      '🚀 Ready for launch.',
+      '🧩 You are the missing piece.',
+      '🌌 Explore the unknown.',
+      '📘 Learn. Repeat. Grow.',
+      '🔥 Burn slow, shine long.',
+      '🧘 Inner peace loading...',
+      '🪐 Something stirs beyond Saturn.',
+      '🦾 You are stronger than code.'
+    ];
+
     function updateClock() {
       const now = new Date();
       const time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const day = now.toLocaleDateString('ru-RU', { weekday: 'long' });
       document.getElementById('clock').textContent = time;
+      document.getElementById('day-name').textContent = `Москва — ${day.charAt(0).toUpperCase() + day.slice(1)}`;
     }
     setInterval(updateClock, 1000);
     updateClock();
+
+    function getWeatherColor(desc) {
+      desc = desc.toLowerCase();
+      if (desc.includes('дожд')) return 'rgba(80, 120, 180, 0.2)';
+      if (desc.includes('ясно')) return 'rgba(255, 200, 100, 0.2)';
+      if (desc.includes('обла')) return 'rgba(150, 150, 150, 0.2)';
+      return 'rgba(255, 255, 255, 0.05)';
+    }
 
     async function updateWeather() {
       try {
@@ -104,17 +173,17 @@
         const iconCodeNow = nowData.weather[0].icon;
         document.getElementById('weather-current').textContent = `${temp}°C, ${desc}`;
         document.getElementById('weather-icon-current').src = `https://openweathermap.org/img/wn/${iconCodeNow}.png`;
+        document.getElementById('weather-row').style.backgroundColor = getWeatherColor(desc);
 
         const resForecast = await fetch('https://api.openweathermap.org/data/2.5/forecast?q=Moscow&appid=404418190855ec8728ec3522177a6232&units=metric&lang=ru');
         const forecastData = await resForecast.json();
 
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
-        const day = tomorrow.getDate();
 
         const forecastForTomorrow = forecastData.list.find(item => {
           const itemDate = new Date(item.dt_txt);
-          return itemDate.getDate() === day && itemDate.getHours() === 12;
+          return itemDate.getDate() === tomorrow.getDate() && itemDate.getHours() === 12;
         });
 
         if (forecastForTomorrow) {
@@ -123,6 +192,7 @@
           const iconCodeT = forecastForTomorrow.weather[0].icon;
           document.getElementById('weather-forecast').textContent = `Завтра: ${tempT}°C, ${descT}`;
           document.getElementById('weather-icon-forecast').src = `https://openweathermap.org/img/wn/${iconCodeT}.png`;
+          document.getElementById('forecast-row').style.backgroundColor = getWeatherColor(descT);
         }
       } catch (err) {
         document.getElementById('weather-current').textContent = 'Ошибка погоды';
@@ -132,7 +202,33 @@
       }
     }
     updateWeather();
-    setInterval(updateWeather, 3600000); // обновление раз в час
+    setInterval(updateWeather, 3600000);
+
+    function showElementTemporarily(id, duration, content = null) {
+      const el = document.getElementById(id);
+      if (content !== null) el.textContent = content;
+      el.style.opacity = 1;
+      setTimeout(() => el.style.opacity = 0, duration);
+    }
+
+    function scheduleEasterEggs() {
+      const times = [Math.random() * 18000000, Math.random() * 18000000 + 18000000];
+      times.forEach(t => setTimeout(() => {
+        const random = easterPhrases[Math.floor(Math.random() * easterPhrases.length)];
+        showElementTemporarily('easter-egg', 5000, random);
+      }, t));
+    }
+
+    function scheduleEye() {
+      const delay = 300000 + Math.random() * 3600000;
+      setTimeout(() => {
+        showElementTemporarily('eye', 5000);
+        scheduleEye();
+      }, delay);
+    }
+
+    scheduleEasterEggs();
+    scheduleEye();
   </script>
 </body>
 </html>

@@ -46,19 +46,6 @@
       width: 40px;
       height: 40px;
     }
-    .iframe-wrapper {
-      width: 100%;
-      max-width: 800px;
-      flex-grow: 1;
-      border-radius: 20px;
-      overflow: hidden;
-      margin: 20px 0;
-    }
-    iframe {
-      width: 100%;
-      height: 800px;
-      border: none;
-    }
     .footer {
       font-size: 18px;
       color: #ccc;
@@ -79,14 +66,6 @@
   </style>
 </head>
 <body>
-  <script>
-    const access = prompt("Введите пароль для доступа:");
-    if (access !== "29791159") {
-      document.body.innerHTML = '<div style="color:white;font-family:monospace;padding:40px;text-align:center;"><h2>Доступ запрещён</h2><p>Неверный пароль</p></div>';
-      throw new Error("Неверный пароль");
-    }
-  </script>
-
   <div class="clock" id="clock">--:--:--</div>
   <div class="weather">
     <div class="city" id="day-name">Москва</div>
@@ -99,21 +78,9 @@
       <div id="weather-forecast"></div>
     </div>
   </div>
-  <div class="iframe-wrapper">
-    <iframe
-      src="https://calendar.google.com/calendar/embed?src=b21nZ21sb2xAZ21haWwuY29t&src=YjlmNWI0YzE0ZmFiYmYxZWNmYjI5NmNjMjQ0MzA0OTY4MGNmMGFjNDUxYmRkN2JkYzZjZDdhYjUyZDFhMGY4NEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=family17256235087314708973@group.calendar.google.com&src=pol5bl9ci5njn7kgja3itfislgcq1rt4@import.calendar.google.com&ctz=Europe%2FMoscow"
-      frameborder="0">
-    </iframe>
-  </div>
   <div class="footer">Hard work, pays off</div>
   <div id="easter-egg">🐉 Keep going!</div>
   <div id="eye">👁</div>
-
-  <!-- Кнопки включения/выключения экрана -->
-  <div>
-    <button style="font-size:16px;padding:10px 20px;border-radius:10px;background:#333;color:#fff;border:1px solid #666;" onclick="window.Fully && Fully.turnScreenOff()">Выкл экран</button>
-    <button style="font-size:16px;padding:10px 20px;border-radius:10px;background:#333;color:#fff;border:1px solid #666;" onclick="window.Fully && Fully.turnScreenOn()">Вкл экран</button>
-  </div>
 
   <script>
     window.dashboardData = window.dashboardData || {};

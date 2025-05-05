@@ -12,31 +12,52 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       height: 100vh;
       margin: 0;
+      padding: 20px 10px 0;
+      box-sizing: border-box;
     }
     .clock {
-      font-size: 72px;
-      margin-bottom: 20px;
+      font-size: 64px;
+      margin-bottom: 10px;
     }
     .weather {
-      font-size: 24px;
+      font-size: 22px;
+      text-align: center;
       margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .weather .city {
+      font-size: 20px;
+      color: #aaa;
+    }
+    .weather .current {
+      font-size: 26px;
+      font-weight: bold;
+    }
+    .weather .forecast {
+      font-size: 20px;
+      color: #ccc;
     }
     iframe {
       border: none;
-      width: 90vw;
-      height: 300px;
+      width: 100%;
+      flex-grow: 1;
     }
   </style>
 </head>
 <body>
   <div class="clock" id="clock">--:--:--</div>
-  <div class="weather" id="weather">Загрузка погоды...</div>
+  <div class="weather">
+    <div class="city">Москва</div>
+    <div class="current" id="weather-current">Загрузка...</div>
+    <div class="forecast" id="weather-forecast"></div>
+  </div>
   <iframe
     src="https://calendar.google.com/calendar/embed?src=b21nZ21sb2xAZ21haWwuY29t&src=YjlmNWI0YzE0ZmFiYmYxZWNmYjI5NmNjMjQ0MzA0OTY4MGNmMGFjNDUxYmRkN2JkYzZjZDdhYjUyZDFhMGY4NEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&ctz=Europe%2FMoscow"
-    frameborder="0"></iframe>
+    frameborder="0">
+  </iframe>
 
   <script>
     function updateClock() {
@@ -49,13 +70,33 @@
 
     async function updateWeather() {
       try {
-        const res = await fetch('https://api.openweathermap.org/data/2.5/weather?q=Moscow&appid=404418190855ec8728ec3522177a6232&units=metric&lang=ru');
-        const data = await res.json();
-        const temp = Math.round(data.main.temp);
-        const desc = data.weather[0].description;
-        document.getElementById('weather').textContent = `${temp}°C, ${desc}`;
+        const resNow = await fetch('https://api.openweathermap.org/data/2.5/weather?q=Moscow&appid=404418190855ec8728ec3522177a6232&units=metric&lang=ru');
+        const nowData = await resNow.json();
+
+        const temp = Math.round(nowData.main.temp);
+        const desc = nowData.weather[0].description;
+        document.getElementById('weather-current').textContent = `${temp}°C, ${desc}`;
+
+        const resForecast = await fetch('https://api.openweathermap.org/data/2.5/forecast?q=Moscow&appid=404418190855ec8728ec3522177a6232&units=metric&lang=ru');
+        const forecastData = await resForecast.json();
+
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const day = tomorrow.getDate();
+
+        const forecastForTomorrow = forecastData.list.find(item => {
+          const itemDate = new Date(item.dt_txt);
+          return itemDate.getDate() === day && itemDate.getHours() === 12;
+        });
+
+        if (forecastForTomorrow) {
+          const tempT = Math.round(forecastForTomorrow.main.temp);
+          const descT = forecastForTomorrow.weather[0].description;
+          document.getElementById('weather-forecast').textContent = `Завтра: ${tempT}°C, ${descT}`;
+        }
       } catch (err) {
-        document.getElementById('weather').textContent = 'Ошибка загрузки погоды';
+        document.getElementById('weather-current').textContent = 'Ошибка погоды';
+        document.getElementById('weather-forecast').textContent = '';
       }
     }
     updateWeather();

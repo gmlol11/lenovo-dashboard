@@ -79,6 +79,14 @@
   </style>
 </head>
 <body>
+  <script>
+    const access = prompt("Введите пароль для доступа:");
+    if (access !== "29791159") {
+      document.body.innerHTML = '<div style="color:white;font-family:monospace;padding:40px;text-align:center;"><h2>Доступ запрещён</h2><p>Неверный пароль</p></div>';
+      throw new Error("Неверный пароль");
+    }
+  </script>
+
   <div class="clock" id="clock">--:--:--</div>
   <div class="weather">
     <div class="city" id="day-name">Москва</div>
@@ -101,10 +109,10 @@
   <div id="easter-egg">🐉 Keep going!</div>
   <div id="eye">👁</div>
 
-  <!-- Кнопки включения/выключения экрана без стилей -->
+  <!-- Кнопки включения/выключения экрана -->
   <div>
-    <button onclick="window.Fully && Fully.turnScreenOff()">Выкл экран</button>
-    <button onclick="window.Fully && Fully.turnScreenOn()">Вкл экран</button>
+    <button style="font-size:16px;padding:10px 20px;border-radius:10px;background:#333;color:#fff;border:1px solid #666;" onclick="window.Fully && Fully.turnScreenOff()">Выкл экран</button>
+    <button style="font-size:16px;padding:10px 20px;border-radius:10px;background:#333;color:#fff;border:1px solid #666;" onclick="window.Fully && Fully.turnScreenOn()">Вкл экран</button>
   </div>
 
   <script>

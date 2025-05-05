@@ -18,24 +18,21 @@
       margin: 0;
       padding: 20px 10px 0;
       box-sizing: border-box;
-      position: relative;
     }
     .clock {
       font-size: 64px;
       margin-bottom: 10px;
     }
     .weather {
-      text-align: left;
       margin-bottom: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 10px;
     }
-    .weather .city {
+    .city {
       font-size: 20px;
       color: #aaa;
-      text-align: center;
     }
     .weather-row, .forecast {
       display: flex;
@@ -43,46 +40,30 @@
       gap: 10px;
       padding: 10px 20px;
       border-radius: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-      transition: background-color 0.3s;
+      background-color: rgba(255,255,255,0.05);
     }
-    .weather .icon {
+    .icon {
       width: 40px;
       height: 40px;
     }
-    .weather .current {
-      font-size: 24px;
-      font-weight: bold;
-    }
-    .weather .forecast {
-      font-size: 20px;
-      color: #ccc;
-    }
     .iframe-wrapper {
       width: 100%;
+      max-width: 800px;
       flex-grow: 1;
       border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      margin: 20px 0;
     }
     iframe {
-      border: none;
       width: 100%;
-      height: 100%;
+      height: 800px;
+      border: none;
     }
     .footer {
-      font-size: 14px;
-      color: #888;
+      font-size: 18px;
+      color: #ccc;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
       margin-top: 10px;
-    }
-    .update-indicator {
-      width: 8px;
-      height: 8px;
-      background-color: #4caf50;
-      border-radius: 50%;
-      animation: blink 1s ease-in-out infinite alternate;
-      display: inline-block;
-      margin-left: 8px;
     }
     #easter-egg, #eye {
       position: absolute;
@@ -95,10 +76,6 @@
     #eye {
       font-size: 48px;
     }
-    @keyframes blink {
-      from { opacity: 1; }
-      to { opacity: 0.2; }
-    }
   </style>
 </head>
 <body>
@@ -107,8 +84,7 @@
     <div class="city" id="day-name">Москва</div>
     <div class="weather-row" id="weather-row">
       <img id="weather-icon-current" class="icon" src="" alt="">
-      <div class="current" id="weather-current">Загрузка...</div>
-      <span class="update-indicator"></span>
+      <div id="weather-current">Загрузка...</div>
     </div>
     <div class="forecast" id="forecast-row">
       <img id="weather-icon-forecast" class="icon" src="" alt="">
@@ -125,32 +101,32 @@
   <div id="easter-egg">🐉 Keep going!</div>
   <div id="eye">👁</div>
 
+  <!-- Кнопки включения/выключения экрана без стилей -->
+  <div>
+    <button onclick="window.Fully && Fully.turnScreenOff()">Выкл экран</button>
+    <button onclick="window.Fully && Fully.turnScreenOn()">Вкл экран</button>
+  </div>
+
   <script>
-    const easterPhrases = [
-      '🐉 Keep going!',
-      '💡 Stay sharp.',
-      '⏳ Time is your ally.',
-      '📡 Connected to the cosmos.',
-      '🛸 Unexpected visitor detected.',
-      '🔮 Trust the process.',
-      '☕ Take a breath.',
-      '🧠 Thinking...',
-      '🚀 Ready for launch.',
-      '🧩 You are the missing piece.',
-      '🌌 Explore the unknown.',
-      '📘 Learn. Repeat. Grow.',
-      '🔥 Burn slow, shine long.',
-      '🧘 Inner peace loading...',
-      '🪐 Something stirs beyond Saturn.',
-      '🦾 You are stronger than code.'
+    window.dashboardData = window.dashboardData || {};
+    window.dashboardData.easterPhrases = window.dashboardData.easterPhrases || [
+      '🐉 Keep going!', '💡 Stay sharp.', '⏳ Time is your ally.', '📡 Connected to the cosmos.',
+      '🛸 Unexpected visitor detected.', '🔮 Trust the process.', '☕ Take a breath.',
+      '🧠 Thinking...', '🚀 Ready for launch.', '🧩 You are the missing piece.',
+      '🌌 Explore the unknown.', '📘 Learn. Repeat. Grow.', '🔥 Burn slow, shine long.',
+      '🧘 Inner peace loading...', '🪐 Something stirs beyond Saturn.', '🦾 You are stronger than code.'
     ];
 
     function updateClock() {
       const now = new Date();
       const time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       const day = now.toLocaleDateString('ru-RU', { weekday: 'long' });
-      document.getElementById('clock').textContent = time;
-      document.getElementById('day-name').textContent = `Москва — ${day.charAt(0).toUpperCase() + day.slice(1)}`;
+      const clockEl = document.getElementById('clock');
+      const dayEl = document.getElementById('day-name');
+      if (clockEl && dayEl) {
+        clockEl.textContent = time;
+        dayEl.textContent = `Москва — ${day.charAt(0).toUpperCase() + day.slice(1)}`;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -206,15 +182,18 @@
 
     function showElementTemporarily(id, duration, content = null) {
       const el = document.getElementById(id);
-      if (content !== null) el.textContent = content;
-      el.style.opacity = 1;
-      setTimeout(() => el.style.opacity = 0, duration);
+      if (el) {
+        if (content !== null) el.textContent = content;
+        el.style.opacity = 1;
+        setTimeout(() => el.style.opacity = 0, duration);
+      }
     }
 
     function scheduleEasterEggs() {
+      const phrases = window.dashboardData.easterPhrases;
       const times = [Math.random() * 18000000, Math.random() * 18000000 + 18000000];
       times.forEach(t => setTimeout(() => {
-        const random = easterPhrases[Math.floor(Math.random() * easterPhrases.length)];
+        const random = phrases[Math.floor(Math.random() * phrases.length)];
         showElementTemporarily('easter-egg', 5000, random);
       }, t));
     }

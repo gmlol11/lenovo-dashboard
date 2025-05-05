@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .clock {
+      font-size: 72px;
+      margin-bottom: 20px;
+    }
+    .weather {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    iframe {
+      border: none;
+      width: 90vw;
+      height: 300px;
+    }
+  </style>
+</head>
+<body>
+  <div class="clock" id="clock">--:--:--</div>
+  <div class="weather" id="weather">Загрузка погоды...</div>
+  <iframe
+    src="https://calendar.google.com/calendar/embed?src=b21nZ21sb2xAZ21haWwuY29t&src=YjlmNWI0YzE0ZmFiYmYxZWNmYjI5NmNjMjQ0MzA0OTY4MGNmMGFjNDUxYmRkN2JkYzZjZDdhYjUyZDFhMGY4NEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&ctz=Europe%2FMoscow"
+    frameborder="0"></iframe>
+
+  <script>
+    function updateClock() {
+      const now = new Date();
+      const time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('clock').textContent = time;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    async function updateWeather() {
+      try {
+        const res = await fetch('https://api.openweathermap.org/data/2.5/weather?q=Moscow&appid=404418190855ec8728ec3522177a6232&units=metric&lang=ru');
+        const data = await res.json();
+        const temp = Math.round(data.main.temp);
+        const desc = data.weather[0].description;
+        document.getElementById('weather').textContent = `${temp}°C, ${desc}`;
+      } catch (err) {
+        document.getElementById('weather').textContent = 'Ошибка загрузки погоды';
+      }
+    }
+    updateWeather();
+    setInterval(updateWeather, 3600000); // обновление раз в час
+  </script>
+</body>
+</html>

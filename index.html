@@ -24,13 +24,26 @@
     }
     .weather {
       font-size: 22px;
-      text-align: center;
+      text-align: left;
       margin-bottom: 20px;
       line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .weather .city {
       font-size: 20px;
       color: #aaa;
+      text-align: center;
+    }
+    .weather-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .weather .icon {
+      width: 40px;
+      height: 40px;
     }
     .weather .current {
       font-size: 26px;
@@ -39,6 +52,13 @@
     .weather .forecast {
       font-size: 20px;
       color: #ccc;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .forecast .icon {
+      width: 30px;
+      height: 30px;
     }
     iframe {
       border: none;
@@ -51,11 +71,17 @@
   <div class="clock" id="clock">--:--:--</div>
   <div class="weather">
     <div class="city">Москва</div>
-    <div class="current" id="weather-current">Загрузка...</div>
-    <div class="forecast" id="weather-forecast"></div>
+    <div class="weather-row">
+      <img id="weather-icon-current" class="icon" src="" alt="">
+      <div class="current" id="weather-current">Загрузка...</div>
+    </div>
+    <div class="forecast">
+      <img id="weather-icon-forecast" class="icon" src="" alt="">
+      <div id="weather-forecast"></div>
+    </div>
   </div>
   <iframe
-    src="https://calendar.google.com/calendar/embed?src=b21nZ21sb2xAZ21haWwuY29t&src=YjlmNWI0YzE0ZmFiYmYxZWNmYjI5NmNjMjQ0MzA0OTY4MGNmMGFjNDUxYmRkN2JkYzZjZDdhYjUyZDFhMGY4NEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&ctz=Europe%2FMoscow"
+    src="https://calendar.google.com/calendar/embed?src=b21nZ21sb2xAZ21haWwuY29t&src=YjlmNWI0YzE0ZmFiYmYxZWNmYjI5NmNjMjQ0MzA0OTY4MGNmMGFjNDUxYmRkN2JkYzZjZDdhYjUyZDFhMGY4NEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=family17256235087314708973@group.calendar.google.com&ctz=Europe%2FMoscow"
     frameborder="0">
   </iframe>
 
@@ -75,7 +101,9 @@
 
         const temp = Math.round(nowData.main.temp);
         const desc = nowData.weather[0].description;
+        const iconCodeNow = nowData.weather[0].icon;
         document.getElementById('weather-current').textContent = `${temp}°C, ${desc}`;
+        document.getElementById('weather-icon-current').src = `https://openweathermap.org/img/wn/${iconCodeNow}.png`;
 
         const resForecast = await fetch('https://api.openweathermap.org/data/2.5/forecast?q=Moscow&appid=404418190855ec8728ec3522177a6232&units=metric&lang=ru');
         const forecastData = await resForecast.json();
@@ -92,11 +120,15 @@
         if (forecastForTomorrow) {
           const tempT = Math.round(forecastForTomorrow.main.temp);
           const descT = forecastForTomorrow.weather[0].description;
+          const iconCodeT = forecastForTomorrow.weather[0].icon;
           document.getElementById('weather-forecast').textContent = `Завтра: ${tempT}°C, ${descT}`;
+          document.getElementById('weather-icon-forecast').src = `https://openweathermap.org/img/wn/${iconCodeT}.png`;
         }
       } catch (err) {
         document.getElementById('weather-current').textContent = 'Ошибка погоды';
         document.getElementById('weather-forecast').textContent = '';
+        document.getElementById('weather-icon-current').src = '';
+        document.getElementById('weather-icon-forecast').src = '';
       }
     }
     updateWeather();
